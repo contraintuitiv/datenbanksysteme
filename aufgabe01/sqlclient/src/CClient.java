@@ -4,7 +4,7 @@ public class CClient {
     
     public static void main(String[] args) throws Exception {
 
-        System.out.println("Hello, World!");
+        System.out.println("Hello, Database!");
         Scanner reader = new Scanner(System.in);
         String query = reader.nextLine();
         String url = "jdbc:postgresql://localhost/world?user=postgres&password=postgres";
@@ -16,9 +16,9 @@ public class CClient {
 
 
         while (rs.next()) {
-            String result = "";
+            String result = "| ";
             for (int i = 1; i <=num; i++){
-                result += rs.getString(i)+", ";
+                result += rs.getString(i)+" | ";
             }
 
             System.out.println(result);
