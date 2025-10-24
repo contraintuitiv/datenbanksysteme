@@ -26,5 +26,6 @@ public class CClient {
         }
         rs.close();
         st.close();
+        reader.close();
     }
 }
