@@ -61,9 +61,29 @@ LIMIT 1
 ```
 
 
-A7: Wieviele Menschen sprechen die zehn Meistgesprochenen sprachen der Welt und welche Sprachen sind es?
+# A7: Wieviele Menschen sprechen die zehn Meistgesprochenen sprachen der Welt und welche Sprachen sind es?
+```
+SELECT lg.language, round(sum(lg.percentage * co.population)) as speakers
+FROM countrylanguage lg
+JOIN country co ON co.code=lg.countrycode
+GROUP BY lg.language
+ORDER BY speakers DESC;
+```
 
-A8: Wie lautet der Name der Hauptstadt des Landes mit den meisten inoffziellen Sprachen?
+# A8: Wie lautet der Name der Hauptstadt des Landes mit den meisten inoffziellen Sprachen?
+```
+-- A8: Wie lautet der Name der Hauptstadt des Landes mit den meisten inoffziellen Sprachen?
+
+SELECT ci.name, count(lg.language)
+FROM city ci
+JOIN countrylanguage lg ON ci.countrycode=lg.countrycode
+JOIN country co ON co.capital=ci.id
+WHERE lg.isofficial=false
+GROUP BY ci.name
+ORDER BY count DESC
+LIMIT 5
+```
+
 
 A9: Bearbeiten Sie die Abfrage A8 so dass es keine LIMIT bzw. ORDER BY Klausel beinhaltet. 
 A10: Welches Land mit welcher Hauptstadt wurde zuerst unabhängig und in welchem Jahr geschah dies?
