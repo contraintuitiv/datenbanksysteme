@@ -49,6 +49,7 @@ SELECT headofstate, count(*) FROM country
 GROUP BY headofstate
 ORDER BY count DESC
 ``` 
+Elisabeth II - für 35
 
 
 # A6: Was ist die meistgesprochene Sprache in dem Land mit der höchsten Lebenserwartung der Welt?
@@ -59,7 +60,7 @@ WHERE co.code = lg.countrycode AND co.lifeexpectancy IS NOT NULL
 ORDER BY co.lifeexpectancy DESC, lg.percentage DESC
 LIMIT 1
 ```
-
+Spanisch in Andorra (83,5 Jahre)
 
 # A7: Wieviele Menschen sprechen die zehn Meistgesprochenen sprachen der Welt und welche Sprachen sind es?
 ```
@@ -72,8 +73,6 @@ ORDER BY speakers DESC;
 
 # A8: Wie lautet der Name der Hauptstadt des Landes mit den meisten inoffziellen Sprachen?
 ```
--- A8: Wie lautet der Name der Hauptstadt des Landes mit den meisten inoffziellen Sprachen?
-
 SELECT ci.name, count(lg.language)
 FROM city ci
 JOIN countrylanguage lg ON ci.countrycode=lg.countrycode
@@ -83,6 +82,8 @@ GROUP BY ci.name
 ORDER BY count DESC
 LIMIT 5
 ```
+
+New Delhi, Peking, Washington, Moscow
 
 # A9: Bearbeiten Sie die Abfrage A8 so dass es keine LIMIT bzw. ORDER BY Klausel beinhaltet. 
 
@@ -103,6 +104,23 @@ HAVING count(lg.language)=(
 
 ```
 
-A10: Welches Land mit welcher Hauptstadt wurde zuerst unabhängig und in welchem Jahr geschah dies?
+# A10: Welches Land mit welcher Hauptstadt wurde zuerst unabhängig und in welchem Jahr geschah dies?
+## Variante limit
+```
+SELECT co.name as countryname, ci.name as capital, indepyear 
+FROM country co
+JOIN city ci ON co.capital = ci.id
+WHERE indepyear IS NOT NULL
+ORDER BY indepyear
+LIMIT 1;
+```
 
+## Variante subquery:
+```
+SELECT co.name as countryname, ci.name as capital, indepyear 
+FROM country co
+JOIN city ci ON co.capital = ci.id
+WHERE indepyear = (SELECT min(indepyear) FROM country);
+```
 
+China, Peking, 1523 v.Chr.
