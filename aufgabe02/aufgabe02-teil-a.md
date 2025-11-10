@@ -84,8 +84,25 @@ ORDER BY count DESC
 LIMIT 5
 ```
 
+# A9: Bearbeiten Sie die Abfrage A8 so dass es keine LIMIT bzw. ORDER BY Klausel beinhaltet. 
 
-A9: Bearbeiten Sie die Abfrage A8 so dass es keine LIMIT bzw. ORDER BY Klausel beinhaltet. 
+```
+SELECT ci.name, count(lg.language)
+FROM city ci
+JOIN countrylanguage lg ON ci.countrycode=lg.countrycode
+JOIN country co ON co.capital=ci.id
+WHERE lg.isofficial=false
+GROUP BY ci.name
+HAVING count(lg.language)=(
+	SELECT max(count) FROM (SELECT count(lg.language)
+	FROM city ci
+	JOIN countrylanguage lg ON ci.countrycode=lg.countrycode
+	JOIN country co ON co.capital=ci.id
+	WHERE lg.isofficial=false
+	GROUP BY ci.name));
+
+```
+
 A10: Welches Land mit welcher Hauptstadt wurde zuerst unabhängig und in welchem Jahr geschah dies?
 
 
