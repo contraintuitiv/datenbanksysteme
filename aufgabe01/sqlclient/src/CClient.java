@@ -13,7 +13,8 @@ public class CClient {
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(query);
         int num = rs.getMetaData().getColumnCount();
-
+        
+        int counter = 0;
 
         while (rs.next()) {
             String result = "| ";
@@ -21,9 +22,13 @@ public class CClient {
                 result += rs.getString(i)+" | ";
             }
 
+            counter++;
+
             System.out.println(result);
 
         }
+
+        System.out.println(counter);
         rs.close();
         st.close();
         reader.close();
