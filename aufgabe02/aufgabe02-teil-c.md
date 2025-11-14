@@ -24,3 +24,16 @@ GROUP BY block
 ORDER BY total DESC
 LIMIT 5
 ```
+
+# C3
+```
+--- C3: Finden Sie den Wochentag und die Stunde (z. B.: Montag um 15 Uhr), an denen die meisten Verbrechen registriert (occured) wurden. 
+--- Betrachten Sie dafür die Jahre 2020 bis 2023 (inklusive).
+
+SELECT count(*), TO_CHAR(occured, 'Day HH24') as dayAndHour 
+FROM crimes 
+WHERE occured >= '2020-01-01' AND occured < '2024-01-01'
+GROUP BY dayAndHour
+ORDER BY count DESC
+```
+Sunday at midnight
