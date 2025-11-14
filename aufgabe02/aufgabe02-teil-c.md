@@ -23,7 +23,20 @@ SELECT block, count(*) as total, (sum(CASE WHEN arrest=true THEN 1 ELSE 0 END)::
 GROUP BY block
 ORDER BY total DESC
 LIMIT 5
+
+
 ```
+Variante (noch nicht funktoiniert)
+
+```
+
+SELECT block, count(*) as total,  ((SELECT count(*) FROM crimes WHERE arrest=true)::float / count(*)::float) as percentage
+FROM crimes
+GROUP BY block 
+ORDER BY total DESC
+
+```
+
 
 # C3
 ```
