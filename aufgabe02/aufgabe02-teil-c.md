@@ -50,3 +50,22 @@ GROUP BY dayAndHour
 ORDER BY count DESC
 ```
 Sunday at midnight
+
+# C4
+/* C4: 	Vergleichen Sie die Zahl der Verbrechen, bei denen eine Verhaftung (arrest) stattgefunden hat, mit der Zahl, 
+		bei denen keine Verhaftung stattfand, pro Wochentag und Stunde für die Jahre 2010–2020. Als Ausgabe soll pro Zeile 
+		der Wochentag (Montag, Dienstag, etc...) und die Stunde (00, 01, 02, ...), die Zahl der Verbrechen mit Verhaftung 
+		und die Zahl der Verbrechen ohne Verhaftung stehen. Die Zeilen sollen nach Wochentag und Stunde sortiert sein. 
+		Messen Sie die Zeit die Sie gebraucht haben um die Abfrage zu entwickeln. */
+-- 10:15
+
+
+SELECT TO_CHAR(occured, 'D Dy HH24') as dayAndHour, 
+	SUM(CASE WHEN arrest='true' THEN 1 ELSE 0 END) as arrested,
+	SUM(CASE WHEN arrest='false' THEN 1 ELSE 0 END) as notArrested
+FROM crimes 
+WHERE occured >= '2010-01-01' AND occured < '2020-01-01'
+GROUP BY dayAndHour
+ORDER BY dayAndHour
+
+-- 10:34 19 Minuten Entwicklungszeit
