@@ -1,5 +1,7 @@
+
 import java.util.Scanner;
 import java.sql.*;
+//java sqlclient.aufgabe01.CClient;
 public class CClient {
     
     public static void main(String[] args) throws Exception {
@@ -7,7 +9,8 @@ public class CClient {
         System.out.println("Hello, Database!");
         Scanner reader = new Scanner(System.in);
         String query = reader.nextLine();
-        String url = "jdbc:postgresql://localhost/world?user=postgres&password=postgres";
+
+        String url = "jdbc:postgresql://localhost:5432/world?user=postgres&password=postgres";
         Connection conn = DriverManager.getConnection(url);
 
         Statement st = conn.createStatement();
@@ -29,3 +32,7 @@ public class CClient {
         reader.close();
     }
 }
+/*
+javac -cp .:.\postgresql-42.7.8.jar CClient.java
+java -cp ".;.\postgresql-42.7.8.jar" CClient
+ */
