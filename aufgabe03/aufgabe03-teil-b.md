@@ -92,6 +92,7 @@ LEFT JOIN comment_tree ct ON s.id = ct.root_story_id -- Joine mit der finalen St
 GROUP BY s.id, s.title
 ORDER BY total_comments DESC
 LIMIT 10;
-
-
 ```
+
+#B3
+
