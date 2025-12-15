@@ -62,7 +62,7 @@ LIMIT 10;
 
 
 
---leicht angepasst läuft 1,5 min.
+-- **leicht angepasst läuft 1,5 min.**
 
 
 WITH RECURSIVE comment_tree AS (
@@ -94,5 +94,6 @@ ORDER BY total_comments DESC
 LIMIT 10;
 ```
 
-#B3
+# B3
+
 
