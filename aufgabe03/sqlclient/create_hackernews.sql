@@ -4,7 +4,7 @@
 
 CREATE TABLE IF NOT EXISTS public.jobs
 (
-    id integer NOT NULL,
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY,
     deleted boolean DEFAULT false,
     type character varying COLLATE pg_catalog."default",
     by character varying COLLATE pg_catalog."default",
@@ -27,7 +27,7 @@ TABLESPACE pg_default;
 
 CREATE TABLE IF NOT EXISTS public.comments
 (
-    id integer NOT NULL,
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 5000000),
     deleted boolean DEFAULT false,
     type character varying COLLATE pg_catalog."default",
     by character varying COLLATE pg_catalog."default",
@@ -51,7 +51,7 @@ TABLESPACE pg_default;
 
 CREATE TABLE IF NOT EXISTS public.stories
 (
-    id integer NOT NULL,
+    id integer NOT NULL GENERATED ALWAYS AS IDENTITY,
     deleted boolean DEFAULT false,
     type character varying COLLATE pg_catalog."default",
     by character varying COLLATE pg_catalog."default",
