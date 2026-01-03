@@ -131,6 +131,8 @@ WITH RECURSIVE comment_depth AS (
 
 
 # B4 
+
+
 WITH RECURSIVE comment_hierarchy AS (
     -- 1. Teil: Finde alle Kommentare, die direkt unter einer Story hängen
     SELECT 
@@ -139,9 +141,7 @@ WITH RECURSIVE comment_hierarchy AS (
         c.parent AS story_id -- Das ist die ID der Story
     FROM comments2023 c
     JOIN stories2023 s ON c.parent = s.id
-
     UNION ALL
-
     -- 2. Rekursiver Teil: Finde alle Kinder-Kommentare der bereits gefundenen Kommentare
     SELECT 
         c.id, 
