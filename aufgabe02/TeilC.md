@@ -56,9 +56,28 @@ order by 1,2 asc
 /*Es hat etwa 10 Minuten gedaurt ,*/
 
 # C5:
-- Finden Sie den Tag (z.B: 5. October 2014) mit den meisten Verbrechen (occured). Wie viele Fälle mehr
-- wurden an diesem Tag registriert im Vergleich zur durchschnittlichen Anzahl der Fälle im gleichen Jahr? 
-- Berechnen Sie den Wert in einer Anfrage. Geben Sie alle vier Werte in einer Zeile zurück: (1) Tag, (2) 
-- Anzahl der Verbrechen an diesem Tag, (3) durchschnittliche Anzahl der Fälle im gleichen Jahr, (4) 
-- prozentualer Unterschied zwischen (2) und (3).
+-- Finden Sie den Tag (z.B: 5. October 2014) mit den meisten Verbrechen (occured). Wie viele Fälle mehr
+-- wurden an diesem Tag registriert im Vergleich zur durchschnittlichen Anzahl der Fälle im gleichen Jahr? 
+-- Berechnen Sie den Wert in einer Anfrage. Geben Sie alle vier Werte in einer Zeile zurück: (1) Tag, (2) 
+-- Anzahl der Verbrechen an diesem Tag, (3) durchschnittliche Anzahl der Fälle im gleichen Jahr, (4) 
+-- prozentualer Unterschied zwischen (2) und (3).
 
+WITH
+daycrimes AS
+(SELECT occured::date AS daymonth,
+TO_CHAR(occured, 'YYYY') as year,
+count(*) as amount
+FROM crimes
+GROUP BY 1, 2),
+average AS
+(SELECT avg(amount) as yearaverage, year
+FROM daycrimes
+GROUP BY year)
+SELECT
+daymonth,
+amount,
+yearaverage,
+(amount/yearaverage)*100 as percentage
+FROM daycrimes
+JOIN average ON daycrimes.year=average.year
+WHERE amount = (SELECT max(amount) FROM daycrimes)
