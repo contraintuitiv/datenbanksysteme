@@ -1,0 +1,1 @@
+# A1: Finde heraus, welcher Verbrechenstyp den größten Anstieg in der Anzahl der Verbrechen von Jahr zu Jahr hatte, unabhängig davon, welche zwei aneinanderliegenden Jahre es sind. Gib den Verbrechenstyp, die beiden Jahre und die Anzahl der Verbrechen in beiden Jahren aus.
