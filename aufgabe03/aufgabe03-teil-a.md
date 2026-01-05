@@ -33,3 +33,24 @@ ORDER BY increase DESC
 LIMIT 1;
 
 # A2
+moving average graph:
+```
+
+WITH mycrime AS 
+	(SELECT
+	occured::date AS daymonth,
+	count(*) AS crimes
+	FROM crimes
+	WHERE occured::date
+	BETWEEN '2010-07-30'
+	AND '2024-07-30'
+	GROUP BY 1 )
+SELECT daymonth, crimes,
+avg(crimes) OVER ( ) AS all_avg,
+avg(crimes) OVER ( ORDER BY
+daymonth RANGE BETWEEN '1 month'
+PRECEDING AND '1 month' FOLLOWING) as mvg_avg
+FROM mycrime
+```
+
+# A3 Finde heraus, welche Blöcke (block) in Chicago jedes Jahr mindestens fünf Verbrechen pro Monat hatten. Betrachte die Jahre 2013 bis 2023. Für die ermittelten Blöcke berechne, ob der Trend regr_slope(y, x) für die Anzahl der Verbrechen in diesem Zeitraum steigend oder fallend ist. Überprüfe den Trend mit Graph Visualizer, indem du die Anzahl der Verbrechen für die ermittelten Blöcke pro Monat darstellst.
