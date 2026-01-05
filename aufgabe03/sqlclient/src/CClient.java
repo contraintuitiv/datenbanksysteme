@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ThreadLocalRandom;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -16,52 +18,77 @@ public class CClient {
     String url = "jdbc:postgresql://localhost/world?user=postgres&password=postgres";
     Connection conn;
     String lastquery = "";
+
+    int laststory_id;
+    int lastcomment_id;
+
     ArrayList<String> stories = new ArrayList<>();
     ArrayList<String> users = new ArrayList<>();
     ArrayList<String> jobs = new ArrayList<>();
     ArrayList<String> comments = new ArrayList<>();
+    ArrayList<String> users_ids = new ArrayList<>();
+    ArrayList<Integer> stories_and_comments_ids = new ArrayList<>();
 
     public CClient() {
         this.reader = new Scanner(System.in);
         try {
             this.conn = DriverManager.getConnection(url);
+
+            this.laststory_id = Integer.parseInt(saveQuery("SELECT MAX(id) FROM stories"));
+            this.lastcomment_id = Integer.parseInt(saveQuery("SELECT MAX(id) FROM comments"));
+
+            System.out.println(laststory_id);
+            System.out.println(lastcomment_id);
+
         } catch (SQLException e) {
             System.out.println("Failed creating DB connection: " + e.getMessage());
         }
     }
 
+    public static <T> T getRandomElement(List<T> list) {
+        if (list == null || list.isEmpty()) {
+            return null; // Oder wirf eine Exception
+        }
+        return list.get(ThreadLocalRandom.current().nextInt(list.size()));
+    }
+
     void createUser() {
         String randomName = "Testuser" + Math.round(Math.random() * 1000000000);
         users.add("('" + randomName + "', '" + LocalDateTime.now() + "')");
-
+        users_ids.add(randomName);
     }
 
     void createStory() {
         String randomTitle = "Teststory " + Math.round(Math.random() * 1000000000);
-        stories.add("('" + randomTitle + "', '" + LocalDateTime.now() + "')");
+        stories.add("('" + randomTitle + "', '" + LocalDateTime.now() + "', '"+ getRandomElement(users_ids)+"')");
+        laststory_id++;
+        stories_and_comments_ids.add(laststory_id);
     }
 
     void createJob() {
         String randomTitle = "Testjob " + Math.round(Math.random() * 1000000000);
-        jobs.add("('" + randomTitle + "', '" + LocalDateTime.now() + "')");
+        jobs.add("('" + randomTitle + "', '" + LocalDateTime.now() + "', '"+ getRandomElement(users_ids)+"')");
     }
 
     void createComment() {
         String randomTitle = "TestComment " + Math.round(Math.random() * 1000000000);
+        comments.add("('" + randomTitle + "', "+ getRandomElement(stories_and_comments_ids)+", '" + LocalDateTime.now() + "', '"+ getRandomElement(users_ids)+"')");
 
-        String table = Math.random() < 0.5 ? "stories" : "comments";
-        comments.add(
-                "INSERT INTO comments (title, parent, created) SELECT '" + randomTitle + "', id, NOW() FROM " + table
-                        + " ORDER BY RANDOM() LIMIT 1");
+        lastcomment_id++;
+        stories_and_comments_ids.add(lastcomment_id);
     }
 
     void populateDb() {
+        stories = new ArrayList<>();
+        users = new ArrayList<>();
+        comments = new ArrayList<>();
+        jobs = new ArrayList<>();
         populateDb(10, 10, 10, 10);
     }
 
     public void populateDb(int users_num, int stories_num, int comments_num, int jobs_num) {
         LocalDateTime start = LocalDateTime.now();
-        
+
         for (int i = 0; i < users_num; i++) {
             createUser();
         }
@@ -80,19 +107,21 @@ public class CClient {
 
         LocalDateTime time_created = LocalDateTime.now();
 
-        // executeUpdate("INSERT INTO users (id, created) VALUES " + String.join(",", users));
-        // executeUpdate("INSERT INTO stories (title, created) VALUES " + String.join(",", stories));
-        // executeUpdate("INSERT INTO jobs (title, created) VALUES " + String.join(",", users));
+        executeUpdate("INSERT INTO users (id, created) VALUES " + String.join(",",
+                users));
+        executeUpdate("INSERT INTO stories (title, created, by) VALUES " +
+                String.join(",", stories));
+        executeUpdate("INSERT INTO jobs (title, created, by) VALUES " + String.join(",",
+                jobs));
 
-        // for (int i = 0; i < comments_num; i++) {
-        //     executeUpdate(comments.get(i));
-        // }
+        executeUpdate("INSERT INTO comments (title, parent, created, by) VALUES " +
+                String.join(",", comments));
 
         LocalDateTime end = LocalDateTime.now();
 
         System.out.println("start: " + start);
         System.out.println("generiert in: " + Duration.between(start, time_created));
-        System.out.println("in Datenbank geschrieben in: "+ Duration.between(start, end));
+        System.out.println("in Datenbank geschrieben in: " + Duration.between(start, end));
 
         startprompt();
 
@@ -103,8 +132,19 @@ public class CClient {
             System.out.printf("Your last custom query was:\n%s\n\n", lastquery);
         }
         System.out.println("Enter your query: ");
+        StringBuilder fullQuery = new StringBuilder();
+        System.out.println("Enter your query (type 'SEND' on a new line to finish):");
 
-        String query = reader.nextLine();
+        while (reader.hasNextLine()) {
+            String line = reader.nextLine();
+            if (line.equalsIgnoreCase("SEND")) {
+                break;
+            }
+            fullQuery.append(line).append("\n");
+        }
+
+        String query = fullQuery.toString().trim();
+
         lastquery = query;
         executeQuery(query);
     }
@@ -121,6 +161,8 @@ public class CClient {
         if (!filepath.startsWith("/")) {
             filepath = System.getProperty("user.dir") + "/" + filepath;
         }
+
+        System.out.println("SELECTED file: " + filepath);
 
         try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
             StringBuilder sb = new StringBuilder();
@@ -145,13 +187,28 @@ public class CClient {
 
     }
 
-    void executeUpdate(String query){
-        try{
+    void executeUpdate(String query) {
+        try {
             Statement st = conn.createStatement();
             st.executeUpdate(query);
         } catch (SQLException e) {
             System.out.println("SQL:" + e.getMessage());
         }
+    }
+
+    String saveQuery(String query) {
+        try {
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            rs.next();
+
+            return rs.getString(1);
+        } catch (SQLException e) {
+            System.out.println("SQL:" + e.getMessage());
+        }
+
+        return null;
+
     }
 
     void executeQuery(String query) {
@@ -161,13 +218,13 @@ public class CClient {
     void executeQuery(String query, Boolean restartprompt) {
         LocalDateTime start = LocalDateTime.now();
 
+        System.out.println(query);
+
         try {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query);
 
-            
             int num = rs.getMetaData().getColumnCount();
-
             System.out.println("num" + num);
 
             int counter = 0;
@@ -185,21 +242,20 @@ public class CClient {
             }
 
             System.out.println(counter + " lines\n\n");
+
             rs.close();
             st.close();
 
         } catch (SQLException e) {
             System.out.println("SQL:" + e.getMessage());
-
         }
 
         LocalDateTime end = LocalDateTime.now();
 
-        System.out.println("Ausführungszeit: "+ Duration.between(start, end));
+        System.out.println("Ausführungszeit: " + Duration.between(start, end));
 
         if (restartprompt) {
             startprompt();
-
         }
     }
 
@@ -226,6 +282,7 @@ public class CClient {
 
                 case 2:
                     fileQuery();
+                    startprompt();
                     break;
 
                 case 3:
