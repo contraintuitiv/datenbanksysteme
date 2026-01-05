@@ -15,17 +15,21 @@ JOIN stories as s ON c.parent=s.id
 -- kürzere Laufzeit, weil ich die vorangelegten views verwendet hab.
 
 WITH c AS
-(SELECT  count (*), parent 
-FROM comments2023
-WHERE dead = false AND deleted = false
-GROUP BY parent 
-ORDER BY count DESC 
-LIMIT 10)
+    (SELECT  count (*), parent 
+    FROM comments2023
+    WHERE dead = false AND deleted = false
+    GROUP BY parent 
+    ORDER BY count DESC 
+    LIMIT 10)
 SELECT * FROM c
 JOIN stories as s ON c.parent=s.id
 
 
 ```
+
+## Laufzeiten B1
+-- Materialized Views: Laufzeit 3,161s 
+-- gesamt: 27,665s
 
 
 # B2
@@ -95,44 +99,50 @@ ORDER BY total_comments DESC
 LIMIT 10;
 ```
 
-# B3
--- Finde die Top 10 Stories mit dem tiefsten Kommentarbaum (maximale Verschachtelungstiefe).
---klappt noch nicht 
+## Laufzeiten B2
+-- Materialized Views: Laufzeit 1:40.853
+-- gesamt: timeout nach >10min
 
-WITH RECURSIVE comment_depth AS (
+
+# B3
+```
+-- Finde die Top 10 Stories mit dem tiefsten Kommentarbaum (maximale Verschachtelungstiefe).
+
+WITH RECURSIVE comment_depth AS 
     -- Anker: Alle Kommentare der ersten Ebene, die direkt auf eine Story verweisen
-    SELECT
-        c.id AS comment_id,
-        s.id AS root_story_id,
-		1 AS level
-       
-    FROM comments2023 c 
-    JOIN stories2023 s ON c.parent = s.id 
-    
-    UNION ALL
-    
+	(SELECT 
+		c.id comment_id,
+		s.id root_story_id,
+		1 level
+	FROM comments2023 c
+	JOIN stories2023 s ON c.parent = s.id
+
+	UNION ALL
+
     -- Rekursion: Alle Kind-Kommentare der nachfolgenden Ebenen
-    SELECT
-        c.id AS comment_id,
-        cd.root_story_id,
-		cd.level + 1 AS level, 
-		--erhöht die Verschachtelungstiefe um 1
-		FROM comments2023 c
-		JOIN comment_depth cd ON c.parent = cd.comment_id 
-		)
-		SELECT 
-		s.titel, 
-		COALESCE(MAX(cd.level), 0) AS max_depth
-		FROM stories2023 s
-		LEFT JOIN comment_depth cd ON s.id = cd.root_story_id
-		GROUp BY s.id, s.title 
-		ORDER BY max_depth DESC 
-		LIMIT 10;
+	SELECT c.id comment_id,
+	cd.root_story_id,
+	cd.level + 1 level
+	-- erhöht die Verschachtelungstiefe um 1
+	FROM comments2023 c
+	JOIN comment_depth cd ON c.parent = cd.comment_id)
+SELECT 
+	s.title, 
+	MAX(cd.level) AS max_depth
+	FROM stories2023 s
+	JOIN comment_depth cd ON s.id = cd.root_story_id
+	GROUP BY s.id, s.title
+	ORDER BY max_depth DESC
+	LIMIT 10;
+```
+
+## Laufzeiten B3
+-- Materialized Views: Laufzeit 1:41.252
+-- gesamt: nicht versucht..
 
 
 # B4 
-
-
+```
 WITH RECURSIVE comment_hierarchy AS (
     -- 1. Teil: Finde alle Kommentare, die direkt unter einer Story hängen
     SELECT 
@@ -159,3 +169,22 @@ JOIN stories2023 s ON ch.story_id = s.id
 GROUP BY s.id, s.title
 ORDER BY unique_commenters DESC
 LIMIT 10;
+```
+
+## Laufzeiten B4
+-- Materialized Views: Laufzeit 00:01:45.740
+-- gesamt: nicht versucht..
+
+Ergebnis:
+
+"title"	"unique_commenters"
+"Apple Vision Pro: Apple s first spatial computer"	1557
+"OpenAI's board has fired Sam Altman"	1530
+"GPT-4"	1347
+"Bob Lee  former CTO of Square  has died after being stabbed in San Francisco"	1253
+"Ask HN: Most interesting tech you built for just yourself?"	1214
+"iPhone 15 and iPhone 15 Plus"	1125
+"Joint statement by the Department of the Treasury  Federal Reserve  and FDIC"	1114
+"We have reached an agreement in principle for Sam to return to OpenAI as CEO"	1091
+"Ask HN: Something you ve done your whole life that you realized is wrong?"	999
+

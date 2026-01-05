@@ -2,7 +2,24 @@
 
 - E1 - Generieren der Daten: 0.295Ss
 - E2 - Einfügen in die Datenbank: 2.012S
-- E3:
+- E3 - 
+
+- Ausführungszeit B3:
+- 
+| Teststory 924030684           | 15            | 
+| Teststory 640578087           | 14            | 
+| Teststory 185227630           | 14            | 
+| Teststory 489576276           | 14            | 
+| Teststory 963969420           | 13            | 
+| Teststory 532479278           | 13            | 
+| Teststory 938649061           | 13            | 
+| Teststory 186404312           | 13            | 
+| Teststory 90759018            | 13            | 
+| Teststory 146676728           | 13            | 
+10 lines
+
+
+Ausführungszeit: PT4.041S
 
 
 - Ausführungszeit B4:
