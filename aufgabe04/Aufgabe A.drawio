@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" version="29.3.0">
   <diagram name="Seite-1" id="p3njlS5QA7PF3zg0Abxz">
-    <mxGraphModel dx="1950" dy="596" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1124" dy="157" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -507,9 +507,6 @@
         </mxCell>
         <mxCell id="clLWJXZMvaZMQJZAClVl-65" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700CC;" value="Seriennummer" vertex="1">
           <mxGeometry height="30" width="117" x="273" y="721" as="geometry" />
-        </mxCell>
-        <mxCell id="7M7kN_k05GMnuI4W5jyr-11" edge="1" parent="1" source="clLWJXZMvaZMQJZAClVl-66" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="clLWJXZMvaZMQJZAClVl-68" value="">
-          <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="clLWJXZMvaZMQJZAClVl-66" parent="1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700CC;" value="zuordnungs_datum" vertex="1">
           <mxGeometry height="30" width="117" x="273" y="756" as="geometry" />
