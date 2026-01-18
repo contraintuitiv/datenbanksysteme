@@ -1,0 +1,74 @@
+# 1. Tabelle Abteilung (inkl. Hierarchie und Budget)
+
+CREATE TABLE Abteilung (
+    Abteilungs_ID SERIAL PRIMARY KEY,
+    Name VARCHAR(100) UNIQUE NOT NULL,
+    Leitung VARCHAR(100),
+    Budget DECIMAL(15, 2),
+    Uebergeordnete_Abteilung_ID INTEGER REFERENCES Abteilung(Abteilungs_ID) ON DELETE SET NULL
+);
+
+
+# 2. Tabelle Arzt (inkl. hierarchischer Vorgesetzten-Struktur)
+
+CREATE TABLE Arzt (
+    Mitarbeiter_ID SERIAL PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Fachrichtung VARCHAR(100),
+    Email VARCHAR(150) UNIQUE NOT NULL,
+    Eintrittsdatum DATE NOT NULL,
+    Vorgesetzter_ID INTEGER REFERENCES Arzt(Mitarbeiter_ID) ON DELETE SET NULL
+);
+
+# 3. Verknüpfungstabelle Arzt_Abteilung (m:n Beziehung)
+-- weil ein Arzt mehreren Abteilungen zugeordnet sein kann.
+
+CREATE TABLE Arzt_Abteilung (
+    Mitarbeiter_ID INTEGER REFERENCES Arzt(Mitarbeiter_ID) ON DELETE CASCADE,
+    Abteilungs_ID INTEGER REFERENCES Abteilung(Abteilungs_ID) ON DELETE SET NULL, -- Anforderung: "nicht zugeordnet"
+    PRIMARY KEY (Mitarbeiter_ID, Abteilungs_ID)
+);
+
+# 4. Tabelle Patient
+CREATE TABLE Patient (
+    Patienten_ID SERIAL PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Geburtsdatum DATE NOT NULL,
+    Geschlecht VARCHAR(20),
+    Kontaktinformationen TEXT
+);
+
+-- 5. Tabelle Behandlung
+CREATE TABLE Behandlung (
+    Behandlungs_ID SERIAL PRIMARY KEY,
+    Patienten_ID INTEGER REFERENCES Patient(Patienten_ID) ON DELETE CASCADE, -- Anforderung: Automatisches Löschen
+    Abteilungs_ID INTEGER REFERENCES Abteilung(Abteilungs_ID) ON DELETE SET NULL,
+    Arzt_ID INTEGER REFERENCES Arzt(Mitarbeiter_ID) ON DELETE SET NULL,
+    Behandlungsdatum TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Diagnosebeschreibung TEXT,
+    Status VARCHAR(50)
+);
+
+-- 6. Tabelle Medikament
+CREATE TABLE Medikament (
+    Medikament_ID SERIAL PRIMARY KEY,
+    Name VARCHAR(100) NOT NULL,
+    Wirkstoff VARCHAR(100),
+    Dosierung VARCHAR(50)
+);
+
+-- 7. Verknüpfungstabelle Behandlung_Medikament (m:n)
+CREATE TABLE Behandlung_Medikament (
+    Behandlungs_ID INTEGER REFERENCES Behandlung(Behandlungs_ID) ON DELETE CASCADE,
+    Medikament_ID INTEGER REFERENCES Medikament(Medikament_ID) ON DELETE CASCADE,
+    PRIMARY KEY (Behandlungs_ID, Medikament_ID)
+);
+
+-- 8. Tabelle Gerät
+CREATE TABLE Geraet (
+    Seriennummer VARCHAR(100) PRIMARY KEY,
+    Bezeichnung VARCHAR(100) NOT NULL,
+    Anschaffungsdatum DATE,
+    Wartungsintervall_Tage INTEGER,
+    Abteilungs_ID INTEGER REFERENCES Abteilung(Abteilungs_ID) ON DELETE CASCADE
+);
