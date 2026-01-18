@@ -30,6 +30,7 @@ CREATE TABLE Arzt_Abteilung (
 );
 
 # 4. Tabelle Patient
+
 CREATE TABLE Patient (
     Patienten_ID SERIAL PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
@@ -38,7 +39,8 @@ CREATE TABLE Patient (
     Kontaktinformationen TEXT
 );
 
--- 5. Tabelle Behandlung
+#5. Tabelle Behandlung
+
 CREATE TABLE Behandlung (
     Behandlungs_ID SERIAL PRIMARY KEY,
     Patienten_ID INTEGER REFERENCES Patient(Patienten_ID) ON DELETE CASCADE, -- Anforderung: Automatisches Löschen
@@ -49,7 +51,8 @@ CREATE TABLE Behandlung (
     Status VARCHAR(50)
 );
 
--- 6. Tabelle Medikament
+#6. Tabelle Medikament
+
 CREATE TABLE Medikament (
     Medikament_ID SERIAL PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
@@ -57,14 +60,15 @@ CREATE TABLE Medikament (
     Dosierung VARCHAR(50)
 );
 
--- 7. Verknüpfungstabelle Behandlung_Medikament (m:n)
+#7. Verknüpfungstabelle Behandlung_Medikament (m:n)
+
 CREATE TABLE Behandlung_Medikament (
     Behandlungs_ID INTEGER REFERENCES Behandlung(Behandlungs_ID) ON DELETE CASCADE,
     Medikament_ID INTEGER REFERENCES Medikament(Medikament_ID) ON DELETE CASCADE,
     PRIMARY KEY (Behandlungs_ID, Medikament_ID)
 );
 
--- 8. Tabelle Gerät
+#8. Tabelle Gerät
 CREATE TABLE Geraet (
     Seriennummer VARCHAR(100) PRIMARY KEY,
     Bezeichnung VARCHAR(100) NOT NULL,
