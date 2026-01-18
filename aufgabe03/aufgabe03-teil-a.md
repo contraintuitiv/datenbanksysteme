@@ -162,10 +162,10 @@ top_trending_blocks AS
 	LIMIT 5
 	)
 SELECT
-bmd.block,
-bmd.month,
-bmd.crime_count,
-abs_slope
+	bmd.block,
+	bmd.month,
+	bmd.crime_count,
+	abs_slope
 FROM block_monthly_data bmd
 INNER JOIN top_trending_blocks ttb ON bmd.block = ttb.block
 ORDER BY bmd.block, bmd.month;
