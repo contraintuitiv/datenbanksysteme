@@ -48,21 +48,49 @@ public class CClient {
         executeQuery(query);
     }
 
+    void fileQuery(String filepath) {
+
+        if (!filepath.startsWith("/")) {
+            filepath = System.getProperty("user.dir") + "/" + filepath;
+        }
+
+        System.out.println("SELECTED file: " + filepath);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(filepath))) {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+
+            while (line != null) {
+                sb.append(line);
+                sb.append(System.lineSeparator());
+                line = br.readLine();
+            }
+            String sql_file = sb.toString();
+
+            executeQuery(sql_file);
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+
+        } catch (IOException e) {
+            System.out.println("I/O error" + e.toString());
+
+        }
+
+    }
+
     void executeQuery(String query) {
-        executeQuery(query, true);
+        executeQuery(query, false);
     }
 
     void executeQuery(String query, Boolean restartprompt) {
         LocalDateTime start = LocalDateTime.now();
-
-        System.out.println(query);
 
         try {
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(query);
 
             int num = rs.getMetaData().getColumnCount();
-            System.out.println("num" + num);
 
             int counter = 0;
 
@@ -107,7 +135,15 @@ public class CClient {
     public static void main(String[] args) throws Exception {
 
         CClient cli = new CClient();
-        cli.startprompt();
+        // cli.startprompt();
+
+        System.out.println("Ermittle die Abteilung mit den meisten Ärzt*innen:");
+        cli.fileQuery("query1.sql");
+
+        
+        System.out.println("\n\n\nErmittle die Zahl der Behandlungen pro Arztgruppe");
+
+        cli.fileQuery("query2.sql");
     }
 
 }
