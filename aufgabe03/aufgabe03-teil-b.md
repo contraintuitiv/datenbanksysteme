@@ -105,7 +105,7 @@ LIMIT 10;
 
 
 # B3
-```
+
 -- Finde die Top 10 Stories mit dem tiefsten Kommentarbaum (maximale Verschachtelungstiefe).
 
 WITH RECURSIVE comment_depth AS 
