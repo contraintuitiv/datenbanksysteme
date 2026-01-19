@@ -10,10 +10,10 @@ CREATE TABLE Arzt (
     DEFAULT NULL
     REFERENCES Arzt(Mitarbeiter_id) 
     ON UPDATE CASCADE
-    ON DELELTE SET NULL
+    ON DELETE SET NULL
 
 );
-CREATE INDEX idx_arzt_hierarchie ON Arzt(vorgesetzen_id) using btree;
+CREATE INDEX idx_arzt_hierarchie ON Arzt USING btree(vorgesetzen_id);
 
 CREATE TABLE Abteilung (
     abteilung_id VARCHAR(20) PRIMARY KEY,
@@ -32,7 +32,7 @@ CREATE TABLE Abteilung (
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
-CREATE INDEX idx_abteilung_Hauptabteilung ON Abteilung(Hauptabteilung_id) using btree;
+CREATE INDEX idx_abteilung_Hauptabteilung ON Abteilung USING btree(Hauptabteilung_id);
 
 CREATE TABLE Arzt_Abteilung (
     Mitarbeiter_id INT,
@@ -51,7 +51,7 @@ CREATE TABLE Arzt_Abteilung (
     REFERENCES Abteilung(Abteilung_id)
     ON DELETE CASCADE
 );
-CREATE INDEX idx_Arzt_Abteilung ON Arzt_Abteilung(Abteilung_id) using btree;
+CREATE INDEX idx_Arzt_Abteilung ON Arzt_Abteilung USING btree(Abteilung_id);
 
 CREATE TABLE Patient (
     patient_id VARCHAR(20) NOT NULL PRIMARY KEY,
@@ -79,7 +79,7 @@ CREATE TABLE Behandlung (
 
     CONSTRAINT fk_arz FOREIGN KEY (Mitarbeiter_id)
     REFERENCES Arzt(Mitarbeiter_id)
-    ON DELETE SET 'DELETED'
+    ON DELETE SET NULL
     ON UPDATE CASCADE,
 
     CONSTRAINT fk_PZNT FOREIGN KEY (patient_id)
@@ -87,8 +87,8 @@ CREATE TABLE Behandlung (
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
-CREATE INDEX idx_Behandlung_Patient ON Behandlung(Patient_id) using btree;
-CREATE INDEX idx_Behandlung_Arzt ON Behandlung(Mitarbeiter_id) using btree;
+CREATE INDEX idx_Behandlung_Patient ON Behandlung USING btree(Patient_id);
+CREATE INDEX idx_Behandlung_Arzt ON Behandlung USING btree(Mitarbeiter_id);
 
 CREATE TABLE Medikamente (
     Med_id VARCHAR(20) NOT NULL Primary key,
@@ -131,4 +131,3 @@ CREATE TABLE Geraete (
     ON DELETE SET NULL
     ON UPDATE CASCADE
 );
-
